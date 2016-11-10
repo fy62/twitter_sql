@@ -58,9 +58,9 @@ module.exports = function makeRouterWithSockets (io) {
       if (err) return next(err);
 
       if (result.rows[0]) {
-        client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [result.rows[0].id, req.body.content], function (err, data) {
+        client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2) RETURNING *', [result.rows[0].id, req.body.content], function (err, data) {
           if (err) return next(err);
-          //io.sockets.emit('new_tweet', newTweet);
+          //io.sockets.emit('new_tweet', data.rows[0]);
           res.redirect('/');
         });
       }
@@ -68,12 +68,12 @@ module.exports = function makeRouterWithSockets (io) {
         client.query('SELECT COUNT(id) as num FROM users', function (err2, result2) {
           if (err2) return next(err2);
           var count = Number(result2.rows[0].num);
-          client.query('INSERT INTO users (id, name) VALUES ($1, $2)', [count + 1, req.body.name], function (err3, data) {
+          client.query('INSERT INTO users (id, name, pictureurl) VALUES ($1, $2, $3) RETURNING *', [count + 1, req.body.name, "http://lorempixel.com/48/48?name={{ tweet.name }}"], function (err3, data) {
             if (err3) return next(err3);
           });
-          client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [count + 1, req.body.content], function (err4, data) {
+          client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2) RETURNING *', [count + 1, req.body.content], function (err4, data) {
           if (err4) return next(err);
-          //io.sockets.emit('new_tweet', newTweet);
+          //io.sockets.emit('new_tweet', data.rows[0]);
           res.redirect('/');
         });
       });
