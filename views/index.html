@@ -14,7 +14,7 @@
         <form action="/tweets" method="POST">
           <label for="name_field">Name:</label>
           <input name="name" type="text" id="name_field" value="{{ username }}"/>
-
+          <br>
           <label for="text_field">Text:</label>
           <input name="content" type="text" id="text_field" />
 
@@ -25,6 +25,13 @@
     <div class="col-md-9">
 
       <!-- display tweets here -->
+      <form action="/search" method="GET">
+        <label for="textfield">Find Tweets:</label>
+        <input name="content" type="text" id="text_field"/>
+
+        <input type="submit" value="Search" />
+      </form>
+      <br>
       <div id="tweets">
       {% for tweet in tweets | reverse %}
         <div class="tweetbox">

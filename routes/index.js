@@ -32,6 +32,16 @@ module.exports = function makeRouterWithSockets (io) {
     });
   });
 
+  //search bar functionality
+  router.get('/search', function(req, res, next){
+    console.log("hello????");
+    client.query('SELECT name, content, pictureurl, tweets.id FROM tweets, users WHERE tweets.userid = users.id AND content LIKE \'%' + req.query.content + '%\'', function (err, result) {
+      if (err) return next(err); // pass errors to Express
+      var tweets = result.rows;
+      res.render('index', { title: 'Twitter.js', tweets: tweets, showForm: true });
+    });
+  });
+
   // single-tweet page
   router.get('/tweets/:id', function(req, res, next){
     client.query('SELECT name, content, pictureurl, tweets.id FROM tweets, users WHERE tweets.userid = users.id AND tweets.id = $1',[req.params.id], function (err, result) {
@@ -47,7 +57,7 @@ module.exports = function makeRouterWithSockets (io) {
   router.post('/tweets', function(req, res, next){
     client.query('SELECT id FROM users WHERE name = $1', [req.body.name], function (err, result) {
       if (err) return next(err);
-      console.log(result);
+
       if (result.rows[0]) {
         client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [result.rows[0].id, req.body.content], function (err, data) {
           if (err) return next(err);
@@ -71,9 +81,8 @@ module.exports = function makeRouterWithSockets (io) {
     }
 
     });
-
-
   });
+
 
   // // replaced this hard-coded route with general static routing in app.js
   // router.get('/stylesheets/style.css', function(req, res, next){
