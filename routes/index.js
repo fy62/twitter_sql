@@ -34,7 +34,6 @@ module.exports = function makeRouterWithSockets (io) {
 
   //search bar functionality
   router.get('/search', function(req, res, next){
-    console.log("hello????");
     client.query('SELECT name, content, pictureurl, tweets.id FROM tweets, users WHERE tweets.userid = users.id AND content LIKE \'%' + req.query.content + '%\'', function (err, result) {
       if (err) return next(err); // pass errors to Express
       var tweets = result.rows;
